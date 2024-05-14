@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import TrungNguLol from './components/trung-ngu';
 
-const EmpDetail = () => {
+const EmpScale = () => {
   const { name } = useParams();
 
   const [empdata, empdatachange] = useState([]);
 
+  const Scale = (name) => {
+    // navigate('/employee/edit/' + id);
+    fetch(`http://localhost:8080/vnflcm/v1/vnf_instances/scale/${name}`, {
+      method: 'POST',
+    })
+      .then((res) => {
+        alert('Scale successfully.');
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   useEffect(() => {
-    fetch(`http://localhost:8080/vnflcm/v1/vnf_instances/listVnfc/${name}`)
+    fetch(`http://localhost:8080/vnflcm/v1/vnf_instances/listDeployment/${name}`)
       .then((res) => {
         console.log(res);
         return res.json();
@@ -31,12 +46,24 @@ const EmpDetail = () => {
               <tr>
                 <td>ID</td>
                 <td>Name</td>
-                <td>STATE</td>
-                <td>NODENAME</td>
-                <td>IP</td>
+                <td>Current Number Of Instance</td>
+                <td>Number Scale</td>
+                <td>Action</td>
               </tr>
             </thead>
             <tbody>
+              {/* {empdata &&
+                empdata.map((item, index) => {
+                  console.log(index);
+                  return (
+                    <tr>
+                      <td>{item.name}</td>
+                      <td>
+                        <TrungNguLol key={item} />
+                      </td>
+                    </tr>
+                  );
+                })} */}
               {empdata &&
                 empdata.map((item) => (
                   <React.Fragment key={item.id}>
@@ -44,9 +71,21 @@ const EmpDetail = () => {
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{vnfc.name}</td>
-                        <td>{vnfc.state}</td>
-                        <td>{vnfc.nodeName}</td>
-                        <td>{vnfc.ip ? vnfc.ip : '-'}</td>
+                        <td>{vnfc.numberofinstance}</td>
+                        <td>
+                          <TrungNguLol key={item.vnfcList.name} />
+                        </td>
+
+                        <td>
+                          <a
+                            onClick={() => {
+                              Scale(name);
+                            }}
+                            className='btn btn-primary'
+                          >
+                            Scale
+                          </a>
+                        </td>
                       </tr>
                     ))}
                   </React.Fragment>
@@ -72,4 +111,4 @@ const EmpDetail = () => {
   );
 };
 
-export default EmpDetail;
+export default EmpScale;
